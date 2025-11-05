@@ -1,34 +1,41 @@
-# Usa a imagem oficial do Node
-FROM node:20-slim
+# =============================================================
+#  Dockerfile - Projeto Backend Node.js + Prisma + MySQL
+#  Baseado em Oracle Linux 10 Slim (recomendado pelo Docker Scout)
+# =============================================================
 
-# Atualiza pacotes e instala o OpenSSL (necessário para o Prisma)
-RUN set -eux; \
-    apt-get update; \
-    apt-get upgrade -y; \
-    apt-get install -y openssl; \
-    apt-get clean; \
-    rm -rf /var/lib/apt/lists/*
+# 1️⃣ — Escolher imagem base recomendada (segura e leve)
+FROM oraclelinux:10-slim
 
-# Define o diretório de trabalho dentro do container
+# 2️⃣ — Instalar Node.js (versão estável LTS) + dependências necessárias ao Prisma
+RUN microdnf install -y oracle-nodejs-release-el10 && \
+    microdnf install -y nodejs npm git openssl-devel libssl3 && \
+    microdnf clean all
+
+# 3️⃣ — Definir diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copia apenas os ficheiros de dependências (para aproveitar cache Docker)
+# 4️⃣ — Copiar ficheiros de configuração primeiro (para cache eficiente)
 COPY package*.json ./
 
-# Instala dependências do projeto
-RUN npm install
+# 5️⃣ — Instalar dependências (sem devDependencies)
+RUN npm install --omit=dev
 
-# Instala o nodemon globalmente (para ambiente de desenvolvimento)
-RUN npm install -g nodemon
-
-# Copia o resto do código do projeto
+# 6️⃣ — Copiar o resto do código da aplicação
 COPY . .
 
-# Gera o cliente Prisma dentro do container
-RUN npx prisma generate
+# 7️⃣ — Definir variáveis de ambiente
+ENV NODE_ENV=production
+ENV PORT=5050
 
-# Expõe a porta definida no .env (para documentação)
+# 8️⃣ — Expor porta do servidor Express
 EXPOSE 5050
 
-# Define o comando padrão (com nodemon)
-CMD ["npm", "run", "dev"]
+# 9️⃣ — Comando padrão
+CMD ["npm", "start"]
+
+# =============================================================
+#  Notas:
+#  - Oracle Linux 10 Slim = imagem mais leve e segura
+#  - microdnf clean all = remove cache (imagem menor)
+#  - npm --omit=dev = evita pacotes desnecessários em produção
+# =============================================================
