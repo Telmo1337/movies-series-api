@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: aw-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aw-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_URL: mysql://root:root@mysql:3306/media_app
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
+      NODE_ENV: development
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - aw-network
+
+  networks:
+   aw-network:
+    driver: bridge

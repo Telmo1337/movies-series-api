@@ -1,0 +1,58 @@
+# Node.js / Backend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# Prisma
+prisma/dev.db
+prisma/migrations/
+*.db-journal
+
+# Logs
+logs
+*.log
+debug.log
+error.log
+*.pid
+*.seed
+
+# Build & Cache
+dist/
+build/
+.cache/
+.tmp/
+coverage/
+.next/
+out/
+.eslintcache
+
+
+# Docker & MySQL
+mysql-data/
+docker-compose.override.yml
+docker-compose.dev.yml
+*.pid
+*.sock
+
+# IDE / Sistema Operativo
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Outros
+*.zip
+*.tar.gz
+*.log.old

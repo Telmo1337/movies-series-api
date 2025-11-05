@@ -1,0 +1,65 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime? 
+  media     UserMedia[]
+  comments  Comment[]
+}
+model Media {
+  id          String     @id @default(uuid())
+  title       String     @unique
+  type        MediaType
+  category    String
+  releaseYear Int
+  endYear     Int?
+  image       String?     
+  rating      Int?
+  description String?
+  users       UserMedia[]
+  comments    Comment[]
+}
+
+
+model UserMedia {
+  id          String   @id @default(uuid())
+  userId      String
+  mediaId     String
+  favorite    Boolean  @default(false)
+  watched     Boolean  @default(false)
+  rating      Int?
+  notes       String?
+  calendarAt  DateTime?
+
+  user   User  @relation(fields: [userId], references: [id])
+  media  Media @relation(fields: [mediaId], references: [id])
+
+  @@unique([userId, mediaId]) // impede duplicar o mesmo filme para o mesmo user
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  userId    String
+  mediaId   String
+  createdAt DateTime @default(now())
+
+  user   User  @relation(fields: [userId], references: [id])
+  media  Media @relation(fields: [mediaId], references: [id])
+}
+
+enum MediaType {
+  MOVIE
+  SERIES
+}
