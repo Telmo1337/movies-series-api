@@ -16,7 +16,10 @@ const registerSchema = z.object({
     email: z.string().email("Invalid email"),
     firstName: z.string().min(2, "Short name"),
     lastName: z.string().min(2, "Short last name"),
-    nickName: z.string().min(2, "Short nickname"),
+    nickName: z.string()
+        .trim()
+        .min(2, "Short nickname")
+        .regex(/^\S+$/, "Nickname cannot contain spaces"),
     password: z.string().min(6, "Your password must have at least 6 caracters"),
 
 });
@@ -73,7 +76,12 @@ authRouter.post("/register", async (req, res, next) => {
         });
 
         //criar token jwt
-        const token = generateToken(user);
+        const token = generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
+
 
         //remover o campo password da res
         const { password: _, ...userWithoutPassword } = user;
@@ -87,6 +95,7 @@ authRouter.post("/register", async (req, res, next) => {
                 lastName: userWithoutPassword.lastName,
                 nickName: userWithoutPassword.nickName,
                 createdAt: userWithoutPassword.createdAt,
+                role: userWithoutPassword.role
             }, token
         });
 
@@ -126,7 +135,12 @@ authRouter.post('/login', async (req, res, next) => {
 
 
         //criar token jwt
-        const token = generateToken(user);
+        const token = generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
+
 
         //hide password
         const { password: _, ...userWithoutPassword } = user;

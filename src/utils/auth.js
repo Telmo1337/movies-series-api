@@ -29,7 +29,7 @@ export function generateToken(payload){
 
      console.log("Token created: ", token)
      return token;
-}S
+}
 
 
 //middleware to verify token
