@@ -79,7 +79,8 @@ authRouter.post("/register", async (req, res, next) => {
         const token = generateToken({
             id: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            nickName: user.nickName
         });
 
 
@@ -138,7 +139,8 @@ authRouter.post('/login', async (req, res, next) => {
         const token = generateToken({
             id: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            nickName: user.nickName
         });
 
 

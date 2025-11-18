@@ -18,7 +18,40 @@ userRouter.get("/", verifyToken, requireAdmin, async(req,res, next)=>{
     }catch(err){
         next()
     }
-})
+});
+
+
+//ver medias criados de um user pelo nickName
+userRouter.get("/:nickName/media", verifyToken, async (req, res, next) => {
+  try {
+    const { nickName } = req.params;
+
+    // verificar se o user existe
+    const user = await prisma.user.findUnique({
+      where: { nickName },
+      select: { id: true, nickName: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ err: "User not found" });
+    }
+
+    // buscar media criados por esse user
+    const mediaList = await prisma.media.findMany({
+      where: { userId: user.id },
+      include: {
+        user: { select: { id: true, nickName: true } }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+
+    res.json(mediaList);
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 
 export default userRouter;

@@ -21,7 +21,7 @@ export async function checkPassword(password, hashedPassword) {
 export function generateToken(payload){
     
     const token = jwt.sign(
-        {id: payload.id, email:payload.email, role: payload.role}, //dados codificados
+        {id: payload.id, email:payload.email, role: payload.role, nickName: payload.nickName}, //dados codificados
         process.env.JWT_SECRET, // secret key do .env
         { expiresIn: "7d"} //tempo de validade do token
      )
