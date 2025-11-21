@@ -3,5 +3,4 @@ mysql-data/
 npm-debug.log
 *.log
 .env
-.prisma
 .vscode/

@@ -43,9 +43,9 @@ sudo systemctl start docker
 
 # 2. Clone the repository
 
-### Important: make sure you clone the **f-version** branch
-```
-git clone -b f-version https://github.com/Telmo1337/Aplica-es-Web---Projeto-Backend
+```bash
+
+git clone https://github.com/Telmo1337/Aplica-es-Web---Projeto-Backend
 
 //and after
 
