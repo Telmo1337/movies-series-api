@@ -101,7 +101,7 @@ You can test all endpoints using Postman, Insomnia or any HTTP client.
 
 ---
 
-# 6. Optional: View backend logs
+# 6. Optional
 
 Only if you want to see the startup process:
 
@@ -109,6 +109,12 @@ Only if you want to see the startup process:
 docker logs aw-backend -f
 ```
 
+
+Only if you want to see the docker status:
+
+```bash
+docker ps
+```
 ---
 
 # 7. How to stop the environment
