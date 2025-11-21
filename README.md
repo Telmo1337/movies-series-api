@@ -49,7 +49,7 @@ git clone https://github.com/Telmo1337/Aplica-es-Web---Projeto-Backend
 
 //and after
 
-cd <project-folder>
+cd Aplica-es-Web---Projeto-Backend
 ```
 
 ---
