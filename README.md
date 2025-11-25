@@ -101,7 +101,20 @@ You can test all endpoints using Postman, Insomnia or any HTTP client.
 
 ---
 
-# 6. Optional
+# 6. Postman Collection & Environment
+
+This project includes a Postman collection containing all API endpoints, as well as the environment required to test authentication and protected features.
+
+### How to use it:
+1. Open Postman (or the Postman extension in VS Code);
+2. Import the file `postman/collection/ProjetoAW - FILMES-SÉRIES.postman_collection.json`
+3. Import the file `postman/collection/ProjetoAW - FILMES-SÉRIES.postman_environment.json`
+4. Set the Environment as active
+5. Register and Run the Login endpoint to automatically generate and save the token and other variables.
+
+---
+
+# 7. Optional
 
 Only if you want to see the startup process:
 
@@ -117,7 +130,7 @@ docker ps
 ```
 ---
 
-# 7. How to stop the environment
+# 8. How to stop the environment
 
 To stop and remove all containers and data:
 
