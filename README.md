@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="cinexio.svg" alt="Cinexio Logo" width="180" />
+  <img src="cinexio.svg" alt="Cinexio Logo" width="600" />
 </p>
 
 
@@ -56,7 +56,7 @@ git clone https://github.com/Telmo1337/Cinexio-AW
 And after you clone go to the project directory:
 
 ```bash
-cd movies-series-api
+cd Cinexio-AW
 ```
 
 ---
