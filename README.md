@@ -45,11 +45,12 @@ sudo systemctl start docker
 
 ```bash
 
-git clone https://github.com/Telmo1337/Aplica-es-Web---Projeto-Backend
+git clone https://github.com/Telmo1337/movies-series-api
 
-//and after
+```
 
-cd Aplica-es-Web---Projeto-Backend
+```bash
+cd movies-series-api
 ```
 
 ---
