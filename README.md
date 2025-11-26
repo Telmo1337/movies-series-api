@@ -1,4 +1,4 @@
-# Web Applications - Movie & Series Management API
+# CINEXIO - Web Applications Movie & Series Management API 
 Backend Project using Node, Express, Prisma ORM and MySQL (Dockerized).
 
 
@@ -45,7 +45,7 @@ sudo systemctl start docker
 
 ```bash
 
-git clone https://github.com/Telmo1337/movies-series-api
+git clone https://github.com/Telmo1337/Cinexio-AW
 
 ```
 And after you clone go to the project directory:
@@ -109,10 +109,17 @@ This project includes a Postman collection containing all API endpoints, as well
 
 ### How to use it:
 1. Open Postman (or the Postman extension in VS Code);
-2. Import the file `postman/collection/ProjetoAW - FILMES-SÉRIES.postman_collection.json`
-3. Import the file `postman/collection/ProjetoAW - FILMES-SÉRIES.postman_environment.json`
+2. Import the file `postman/collection/Cinexio - Movies&TVshows API - collection.postman_collection.json`
+3. Import the file `postman/collection/Cinexio - Movies&TVshows API - env.postman_environment.json`
 4. Set the Environment as active
 5. Register and Run the Login endpoint to automatically generate and save the token and other variables.
+
+**Collection**
+<img width="250" height="767" alt="image" src="https://github.com/user-attachments/assets/e9806e97-d2a8-4920-9206-7b5aa2f89245" />
+
+
+**Environment variables**
+<img width="317" height="302" alt="image" src="https://github.com/user-attachments/assets/c46359b8-e84a-4d4a-ac27-af634695c8f8" />
 
 ---
 
