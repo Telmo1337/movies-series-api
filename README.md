@@ -148,6 +148,36 @@ npm run projectAW-stop
 - Works on any OS;
 - Everything runs automatically with Docker Compose;
 - **DO NOT** run the backend manually with Node/npm;
-- The database is recreated fresh every time due to the -v flag (volume removed).
+
+---
+
+## Important to know:
+
+Both cmds `npm run projectAW` and `npm run projectAW-stop` use the `docker compose down -v` flag.
+The `-v` flag forces Docker to remove all volumes associated with the containers.
+
+**This means:**
+- The **database is deleted and recreated from scratch every time** you start or stop the project using these cmds.
+- All stored data (users, media, comments, etc.) is erased because the database volume is destroyed.
+
+This behaviour is intentional for development:
+- It guarantees a fully clean environment on every run, avoiding conflicts with cached data, old migrations or inconsistent states.
+
+### If you do NOT want the database to reset every time:
+
+- You must remove the `-v` flag from the scripts in the `package.json`.
+
+Example:
+```json
+{
+ "scripts": {
+    "projectAW": "docker compose down && docker compose up -d --build",
+    "projectAW-stop": "docker compose down"
+  }
+}
+```
+**By removing `-v`, the database volume becomes persistent and the data will no longer be wiped between runs.**
+
+---
 
 © 2025 – Academic project develop by Telmo Regalado and Tiago Silva
