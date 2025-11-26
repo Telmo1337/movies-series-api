@@ -48,6 +48,7 @@ sudo systemctl start docker
 git clone https://github.com/Telmo1337/movies-series-api
 
 ```
+And after you clone go to the project directory:
 
 ```bash
 cd movies-series-api
