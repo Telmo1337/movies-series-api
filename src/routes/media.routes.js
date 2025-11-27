@@ -33,48 +33,48 @@ const mediaUpdateSchema = z.object({
     image: z.string().url("Image must be a valid URL").optional(),
 })
 const commentSchema = z.object({
-  content: z.string().min(1, "Content is required"),
+    content: z.string().min(1, "Content is required"),
 });
 
 
 //encontrar filme ou serie por categoria
 //find movie or series by category
 mediaRouter.get("/bycategory", verifyToken, async (req, res, next) => {
-  try {
+    try {
 
-    //obter categoria da query
-    //get category from query
-    const { category } = req.query;
+        //obter categoria da query
+        //get category from query
+        const { category } = req.query;
 
-    //se não existir, erro
-    //if not exist, error
-    if (!category || category.trim() === "") {
-      return res.status(400).json({ err: "category query parameter is required" });
+        //se não existir, erro
+        //if not exist, error
+        if (!category || category.trim() === "") {
+            return res.status(400).json({ err: "category query parameter is required" });
+        }
+
+        //obter todos os media
+        //get all media
+        const media = await prisma.media.findMany();
+
+        // filtrar em javascript (ja que o prisma nao suporta arrays em queries)
+        // filter in javascript (since prisma does not support arrays in queries)
+        const filtered = media.filter(item =>
+            Array.isArray(item.category) && item.category.includes(category)
+        );
+
+        //retornar resultados
+        //return results
+        res.json({
+            success: true,
+            count: filtered.length,
+            data: filtered
+        });
+
+    } catch (err) {
+        //erro ao obter media por categoria
+        //error getting media by category
+        next(err);
     }
-
-    //obter todos os media
-    //get all media
-    const media = await prisma.media.findMany();
-
-    // filtrar em javascript (ja que o prisma nao suporta arrays em queries)
-    // filter in javascript (since prisma does not support arrays in queries)
-    const filtered = media.filter(item => 
-      Array.isArray(item.category) && item.category.includes(category)
-    );
-
-    //retornar resultados
-    //return results
-    res.json({
-      success: true,
-      count: filtered.length,
-      data: filtered
-    });
-
-  } catch (err) {
-    //erro ao obter media por categoria
-    //error getting media by category
-    next(err);
-  }
 });
 
 
@@ -82,66 +82,66 @@ mediaRouter.get("/bycategory", verifyToken, async (req, res, next) => {
 // Criar comentário para um media
 // Create comment for a media
 mediaRouter.post("/:mediaId/comments", verifyToken, async (req, res, next) => {
-  try {
+    try {
 
-    //validar dados
-    //validate data
-    const parse = commentSchema.safeParse(req.body);
+        //validar dados
+        //validate data
+        const parse = commentSchema.safeParse(req.body);
 
-    //se dados invalidos, retornar erro
-    //if data invalid, return error
-    if (!parse.success) {
-      return res.status(400).json({ errors: parse.error.flatten().fieldErrors });
+        //se dados invalidos, retornar erro
+        //if data invalid, return error
+        if (!parse.success) {
+            return res.status(400).json({ errors: parse.error.flatten().fieldErrors });
+        }
+
+        //verificar se o media existe
+        //check if media exists
+        const { mediaId } = req.params;
+        const media = await prisma.media.findUnique({ where: { id: mediaId } });
+
+        //se media não existir, erro
+        //if media does not exist, error
+        if (!media) return res.status(404).json({ err: "Media not found" });
+
+        //criar comentário
+        //create comment
+        const comment = await prisma.comment.create({
+            data: {
+                content: parse.data.content,
+                mediaId,
+                userId: req.user.id,
+            },
+        });
+
+        //retornar comentário criado
+        //return created comment
+        res.status(201).json(comment);
+    } catch (err) {
+        //erro ao criar comentário
+        //error creating comment
+        next(err);
     }
-
-    //verificar se o media existe
-    //check if media exists
-    const { mediaId } = req.params;
-    const media = await prisma.media.findUnique({ where: { id: mediaId } });
-    
-    //se media não existir, erro
-    //if media does not exist, error
-    if (!media) return res.status(404).json({ err: "Media not found" });
-
-    //criar comentário
-    //create comment
-    const comment = await prisma.comment.create({
-      data: {
-        content: parse.data.content,
-        mediaId,
-        userId: req.user.id,
-      },
-    });
-
-    //retornar comentário criado
-    //return created comment
-    res.status(201).json(comment);
-  } catch (err) {
-    //erro ao criar comentário
-    //error creating comment
-    next(err);
-  }
 });
 
 // Lista de comentários de um media
 // List comments of a media
 mediaRouter.get("/:mediaId/comments", async (req, res, next) => {
-  try {
-    //obter comentários
-    //get comments
-    const comments = await prisma.comment.findMany({
-      where: { mediaId: req.params.mediaId },
-      include: { user: { select: { id: true, nickName: true } } },
-    });
+    try {
+        //obter comentários
+        //get comments
+        const comments = await prisma.comment.findMany({
+            where: { mediaId: req.params.mediaId },
+            include: { user: { select: { id: true, nickName: true } } },
+        });
 
-    //retornar comentários
-    //return comments
-    res.json(comments);
-  } catch (err) {
-    //erro ao obter comentários
-    //error getting comments
-    next(err);
-  }
+        //retornar comentários
+        //return comments
+        res.json(comments);
+    } catch (err) {
+        //erro ao obter comentários
+        //error getting comments
+        next(err);
+    }
 });
 
 
@@ -152,7 +152,7 @@ mediaRouter.post("/", verifyToken, async (req, res, next) => {
         //validar dados
         //validate data
         const result = mediaSchema.safeParse(req.body);
-        
+
         //se dados inválidos, retornar erro
         //if data invalid, return error
         if (!result.success) {
@@ -200,10 +200,21 @@ mediaRouter.post("/", verifyToken, async (req, res, next) => {
 //view all movies/series
 mediaRouter.get("/", verifyToken, async (req, res, next) => {
     try {
-        
+
+        //paginação
+        //pagination
+        const page = Number(req.query.page) || 1;
+        const pageSize = Number(req.query.pageSize) || 10;
+        const skip = (page - 1) * pageSize;
+
+        const totalMedia = await prisma.media.count();
+
+
         //obter todos os media
         //get all media
         const mediaList = await prisma.media.findMany({
+            skip,
+            take: pageSize,
             include: {
                 user: {
                     select: { id: true, nickName: true, }
@@ -211,10 +222,17 @@ mediaRouter.get("/", verifyToken, async (req, res, next) => {
             },
             orderBy: { createdAt: 'desc' },
         });
-        
+
         //retornar lista de media
         //return media list
-        res.json(mediaList);
+        res.json({
+            page,
+            pageSize,
+            totalMedia,
+            totalPages: Math.ceil(totalMedia / pageSize),
+            count: mediaList.length,
+            data: mediaList
+        });
     } catch (err) {
         //erro ao obter lista de media
         //error getting media list
@@ -239,24 +257,50 @@ mediaRouter.get("/search", verifyToken, async (req, res, next) => {
             return res.status(400).json({ err: "Title query parameter is required" });
         }
 
-        //obter media
-        //get media
+
+        //paginação
+        //pagination
+        const page = Number(req.query.page) || 1;
+        const pageSize = Number(req.query.pageSize) || 10;
+        const skip = (page - 1) * pageSize;
+
+        //obter media por título
+        //get media by title
+        const where = {
+            title: {
+                contains: title,
+                mode: "insensitive"
+            }
+        };
+
+        const total = await prisma.media.count({ where });
+
         const media = await prisma.media.findMany({
-            where: { title: { contains: title } },
+            where,
+            skip,
+            take: pageSize,
             include: { user: { select: { id: true, nickName: true } } },
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: "desc" },
         });
 
+        
         //se não existir, erro
         //if not exist, error
-        if (media.length === 0) {
+        if (total === 0) {
             return res.status(404).json({ err: `Media not found ${title}` });
         }
 
 
         //retornar media
         //return media
-        res.json(media);
+        res.json({
+            page,
+            pageSize,
+            total,
+            totalPages: Math.ceil(total / pageSize),
+            count: media.length,
+            data: media
+        });
     } catch (err) {
         //erro ao obter media por título
         //error getting media by title
@@ -389,11 +433,11 @@ mediaRouter.delete("/:id", verifyToken, async (req, res, next) => {
         await prisma.userMedia.deleteMany({
             where: { mediaId: id }
         });
-    
+
         await prisma.comment.deleteMany({
             where: { mediaId: id }
         });
-  
+
         //apagar media
         //delete media
         await prisma.media.delete({

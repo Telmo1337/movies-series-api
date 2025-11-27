@@ -8,7 +8,7 @@ const libraryRouter = Router();
 
 // biblioteca pública de outro utilizador
 // public library of another user
-libraryRouter.get("/user/:nickName", async (req, res, next) => {
+libraryRouter.get("/user/:nickName", verifyToken,async (req, res, next) => {
   try {
     const { nickName } = req.params;
 

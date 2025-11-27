@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="cinexio.svg" alt="Cinexio Logo" width="600" />
+  <img src="/assets/cinexio.svg" alt="Cinexio Logo" width="600" />
 </p>
 
 
@@ -121,10 +121,10 @@ This project includes a Postman collection containing all API endpoints, as well
 
 
 ### **Collection**
-<img src="https://github.com/user-attachments/assets/e9806e97-d2a8-4920-9206-7b5aa2f89245" width="300" />
+<img src="/assets/collection.png" width="300" />
 
 ### **Environment Variables**
-<img src="https://github.com/user-attachments/assets/c46359b8-e84a-4d4a-ac27-af634695c8f8" width="300" />
+<img src="/assets/env.png" width="300" />
 
 
 ---
