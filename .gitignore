@@ -13,7 +13,6 @@ pnpm-debug.log*
 
 # Prisma
 prisma/dev.db
-prisma/migrations/
 *.db-journal
 
 # Logs

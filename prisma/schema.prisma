@@ -7,17 +7,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
+//definição de papéis de utilizador
+//user role definition
 enum UserRole {
   ADMIN
   MEMBER
 }
 
+//definição de privacidade do perfil
+//profile privacy definition
 enum ProfilePrivacy {  
   PUBLIC
   FRIENDS
   PRIVATE
 }
 
+
+//tabela de utilizadores
+//table of users
 model User {
   id          String         @id @default(uuid())
   firstName   String
@@ -43,6 +50,11 @@ model User {
   passwordResets PasswordReset[]
 }
 
+
+
+
+//tabela de tokens de atualização
+//table of refresh tokens
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
@@ -51,6 +63,9 @@ model RefreshToken {
   createdAt DateTime @default(now())
 }
 
+
+//tabela de redefinição de palavra-passe
+//table of password reset
 model PasswordReset {       
   id        Int      @id @default(autoincrement())
   token     String   @unique
@@ -61,6 +76,9 @@ model PasswordReset {
   used      Boolean  @default(false)
 }
 
+
+//tabela de media (filmes e séries)
+//table of media (movies and series)
 model Media {
   id          String      @id @default(uuid())
   title       String
@@ -68,10 +86,15 @@ model Media {
   category    Json
   releaseYear Int
   endYear     Int?
+  country     String?
+  language    String?
+  director    String?
   image       String?
   rating      Int?
   description String?
+  platform    Json?
   createdAt   DateTime    @default(now())
+  updatedAt   DateTime?   @updatedAt
   userId      String
   users       UserMedia[]
   comments    Comment[]
@@ -81,6 +104,9 @@ model Media {
   @@index([userId], map: "Media_userId_fkey")
 }
 
+
+//tabela de relação entre utilizadores e media (filmes e séries)
+//table of relation between users and media (movies and series)
 model UserMedia {
   id         String    @id @default(uuid())
   userId     String
@@ -99,6 +125,9 @@ model UserMedia {
   @@index([mediaId], map: "UserMedia_mediaId_fkey")
 }
 
+
+//tabela de listas de media criadas pelos utilizadores
+//table of media lists created by users
 model List {
   id        String     @id @default(uuid())
   name      String
@@ -109,6 +138,8 @@ model List {
   createdAt DateTime   @default(now())
 }
 
+//tabela de itens em cada lista de media
+//table of items in each media list
 model ListItem {
   id      String @id @default(uuid())
   listId  String
@@ -122,11 +153,15 @@ model ListItem {
   @@unique([listId, mediaId])
 }
 
+//definição de privacidade da lista
+//list privacy definition
 enum Privacy {
   PUBLIC
   PRIVATE
 }
 
+//tabela de comentários feitos pelos utilizadores nas media (filmes e séries)
+//table of comments made by users on media (movies and series)
 model Comment {
   id        String   @id @default(uuid())
   content   String
@@ -141,11 +176,15 @@ model Comment {
   @@index([mediaId], map: "Comment_mediaId_fkey")
 }
 
+//definição de tipo de media
+//media type definition
 enum MediaType {
   MOVIE
   SERIES
 }
 
+//definição de status de visualização
+//watch status definition
 enum WatchStatus {
   WANT_TO_WATCH
   WATCHING

@@ -172,25 +172,25 @@ export async function listCommentsService(mediaId) {
 //  CRIAR MEDIA (MOVIE / SERIES)
 // ========================================================
 export async function createMediaService(body, user) {
+  if (user.role !== "ADMIN") {
+    throw new Error("Only admins can create media");
+  }
 
-  // Validar dados com Zod
   const result = mediaSchema.safeParse(body);
   if (!result.success) {
     throw new Error(result.error.errors[0].message);
   }
 
-  // Verificar duplicados
   const exists = await prisma.media.findFirst({
     where: { title: result.data.title }
   });
 
   if (exists) throw new Error("Media already exists");
 
-  // Criar media
   const media = await prisma.media.create({
     data: {
       ...result.data,
-      userId: user.id
+      userId: user.id // quem criou
     },
     include: {
       user: { select: { id: true, nickName: true } }
@@ -199,7 +199,6 @@ export async function createMediaService(body, user) {
 
   return media;
 }
-
 
 
 // ========================================================
@@ -316,22 +315,18 @@ export async function getMediaByIdService(id) {
 // ========================================================
 export async function updateMediaService(id, body, user) {
 
-  // Validar atualização
+  if (user.role !== "ADMIN") {
+    throw new Error("Only admins can update media");
+  }
+
   const result = mediaUpdateSchema.safeParse(body);
   if (!result.success) {
     throw new Error(result.error.errors[0].message);
   }
 
-  // Verificar existência
   const media = await prisma.media.findUnique({ where: { id } });
   if (!media) throw new Error("Media not found");
 
-  // Verificar permissão (criador)
-  if (media.userId !== user.id) {
-    throw new Error("You are not authorized to update this media");
-  }
-
-  // Atualizar
   const updated = await prisma.media.update({
     where: { id },
     data: result.data
@@ -347,20 +342,16 @@ export async function updateMediaService(id, body, user) {
 // ========================================================
 export async function deleteMediaService(id, user) {
 
-  const media = await prisma.media.findUnique({ where: { id } });
-
-  if (!media) throw new Error("Media not found");
-
-  // Apenas criador ou ADMIN pode apagar
-  if (media.userId !== user.id && user.role !== "ADMIN") {
-    throw new Error("You are not authorized to delete this media");
+  if (user.role !== "ADMIN") {
+    throw new Error("Only admins can delete media");
   }
 
-  // Remover associações
+  const media = await prisma.media.findUnique({ where: { id } });
+  if (!media) throw new Error("Media not found");
+
   await prisma.userMedia.deleteMany({ where: { mediaId: id } });
   await prisma.comment.deleteMany({ where: { mediaId: id } });
 
-  // Apagar media
   await prisma.media.delete({ where: { id } });
 
   return {
@@ -373,3 +364,4 @@ export async function deleteMediaService(id, user) {
     deletedBy: user.nickName
   };
 }
+
