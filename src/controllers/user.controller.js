@@ -125,7 +125,11 @@ export async function updateAvatar(req, res, next) {
     const { avatar } = validateSchema(updateAvatarSchema, req.body);
     const result = await updateUserAvatarService(req.user.id, avatar);
 
-    return res.json(result);
+    return res.json({ 
+      
+      message: "Avatar updated successfully" 
+
+    });
 
   } catch (err) {
     next(err);

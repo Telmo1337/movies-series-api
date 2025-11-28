@@ -91,20 +91,36 @@
 									"  try {\r",
 									"    const j = pm.response.json();\r",
 									"\r",
-									"    // Guarda o token JWT\r",
+									"    // Guardar Token JWT principal (token)\r",
 									"    if (j && j.token) {\r",
 									"      pm.environment.set(\"token\", j.token);\r",
+									"      console.log(\"Token guardado:\", j.token);\r",
 									"    }\r",
 									"\r",
-									"    // Guarda o ID do utilizador\r",
+									"    // Guardar Refresh Token\r",
+									"    if (j && j.refreshToken) {\r",
+									"      pm.environment.set(\"refreshToken\", j.refreshToken);\r",
+									"      console.log(\"Refresh token guardado:\", j.refreshToken);\r",
+									"    }\r",
+									"\r",
+									"    // Guardar ID do utilizador\r",
 									"    if (j.user?.id) {\r",
 									"      pm.environment.set(\"userId\", j.user.id);\r",
+									"      console.log(\"User ID guardado:\", j.user.id);\r",
 									"    }\r",
 									"\r",
-									"    // Guarda o nickName do utilizador\r",
+									"    // Guardar nickname do utilizador\r",
 									"    if (j.user?.nickName) {\r",
 									"      pm.environment.set(\"nickName\", j.user.nickName);\r",
+									"      console.log(\"Nickname guardado:\", j.user.nickName);\r",
 									"    }\r",
+									"\r",
+									"    //guardar email\r",
+									"    if (j.user?.email) {\r",
+									"    pm.environment.set(\"email\", j.user.email);\r",
+									"     console.log(\"Email guardado:\", j.user.email);\r",
+									"    }\r",
+									"\r",
 									"\r",
 									"  } catch (e) {\r",
 									"    console.error(\"Erro ao processar resposta JSON:\", e);\r",
@@ -139,6 +155,329 @@
 								"v1",
 								"auth",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET users (pagination)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users?page=1&pageSize=10",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT avatar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"avatar\": \"\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/avatar",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST logout user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/logout",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST forgot password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Parse response\r",
+									"const resp = pm.response.json();\r",
+									"\r",
+									"// Guardar resetToken na Environment\r",
+									"pm.environment.set(\"resetToken\", resp.resetToken);\r",
+									"\r",
+									"// Validar que o token existe\r",
+									"pm.test(\"Reset token returned\", () => {\r",
+									"    pm.expect(resp.resetToken).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/forgot-password",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST reset password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"token\": \"{{resetToken}}\",\r\n  \"newPassword\": \"newpassword123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/reset-password",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT edit profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bio\": \"I love movies!\",\r\n  \"preferences\": { \r\n      \"genres\": [\r\n          \"Crime\", \r\n          \"Mafia\"\r\n          ] \r\n    },\r\n  \"language\": \"PT\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/profile",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT privacy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"privacy\": \"PUBLIC\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/privacy",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"privacy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET profile with privacy rules",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/users/{{nickName}}/profile",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{nickName}}",
+								"profile"
 							]
 						}
 					},
@@ -346,7 +685,7 @@
 							"response": []
 						},
 						{
-							"name": "DELETE media por id",
+							"name": "DELETE media por id ONLY ADMIN",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -410,6 +749,139 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "GET top 10 movies",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/media/top/global/movies",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"media",
+										"top",
+										"global",
+										"movies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET top 10 series",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/media/top/global/series",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"media",
+										"top",
+										"global",
+										"series"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET global ranking",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/media/ranking",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"media",
+										"ranking"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST update media ONLY ADMIN",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"language\": \"EN\",\r\n    \"country\": \"portugal\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/v1/media/{{mediaId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"media",
+										"{{mediaId}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -422,6 +894,16 @@
 								{
 									"name": "GET - public library",
 									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -802,6 +1284,73 @@
 					"name": "/comments",
 					"item": [
 						{
+							"name": "commentLikes",
+							"item": [
+								{
+									"name": "POST add like to a comment",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/api/v1/comment-likes/{{commentId}}/like",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"comment-likes",
+												"{{commentId}}",
+												"like"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "GET check comment likes",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseURL}}/api/v1/comment-likes/{{commentId}}/likes",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"comment-likes",
+												"{{commentId}}",
+												"likes"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "POST - add comment to a media",
 							"event": [
 								{
@@ -977,6 +1526,269 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "/list",
+					"item": [
+						{
+							"name": "POST create list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// ===============================\r",
+											"// Save List ID from response\r",
+											"// ===============================\r",
+											"try {\r",
+											"    const json = pm.response.json();\r",
+											"\r",
+											"    if (json && json.id) {\r",
+											"        pm.environment.set(\"listId\", json.id);\r",
+											"        console.log(\"Saved listId:\", json.id);\r",
+											"    }\r",
+											"\r",
+											"} catch (err) {\r",
+											"    console.log(\"Error saving listId:\", err);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Top 10 Crime Movies\",\r\n  \"privacy\": \"PUBLIC\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET check my lists",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/my",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"my"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET check list by id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/{{listId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"{{listId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE list",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/{{listId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"{{listId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH change privacy",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"privacy\": \"PRIVATE\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/{{listId}}/privacy",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"{{listId}}",
+										"privacy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST add media to list",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/{{listId}}/items/{{mediaId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"{{listId}}",
+										"items",
+										"{{mediaId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE media from list",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/v1/lists/{{listId}}/items/{{mediaId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lists",
+										"{{listId}}",
+										"items",
+										"{{mediaId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
@@ -1019,6 +1831,26 @@
 		},
 		{
 			"key": "commentId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "listId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "resetToken",
 			"value": "",
 			"type": "string"
 		}
